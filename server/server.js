@@ -1,21 +1,33 @@
-const fastify = require('fastify')({ logger: true })
+const fastify = require('fastify')({ logger: true });
+const fp = require('fastify-plugin');
+const { MongoClient } = require('mongodb');
 
-fastify.get('/', async (request, reply) => {
-  return { hello: 'world' }
-})
+// register mongodb client
+fastify.register(fp(async (fastify) => {
+  const url = process.env.MONGO_URL;
+  const client = await MongoClient.connect(url, { useUnifiedTopology: true });
 
-fastify.get('/api/hello', async (request, reply) => {
-  return { message: 'Hello from Fastify!' }
-})
+  fastify.decorate('mongo', client);
+}));
 
-const start = async () => {
-  try {
-    await fastify.listen(3000)
-    fastify.log.info(`server listening on ${fastify.server.address().port}`)
-  } catch (err) {
-    fastify.log.error(err)
-    process.exit(1)
-  }
-}
+fastify.post('/wallet', async (request, reply) => {
+  const wallet = request.body;
+  const collection = fastify.mongo.db('autofi').collection('wallets');
+  const result = await collection.insertOne(wallet);
+  
+  reply.send(result.ops[0]);
+});
 
-start()
+fastify.listen({ port: 3000 }, err => {
+  if (err) throw err;
+  console.log('Server listening on localhost:', fastify.server.address().port);
+});
+
+// register websocket
+fastify.register(require('@fastify/websocket'));
+
+fastify.get('/ws', { websocket: true }, (connection, req) => {
+  connection.socket.on('message', msg => {
+    connection.socket.send('Msg from the server');
+  });
+});

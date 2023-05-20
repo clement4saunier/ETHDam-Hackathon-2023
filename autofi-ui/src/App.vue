@@ -4,12 +4,12 @@
     <h1>Autofi</h1>
 
     <div v-if="!account">
-      <button @click="connectWallet">Connect your wallet</button>
+      <button @click="connectUserWallet">Connect your wallet</button>
     </div>
-    <div v-else-if="!wallet" class="content-group">
+    <!-- <div v-else-if="!wallet" class="content-group">
       <div>Welcome, {{account}}</div>
-      <button @click="createWallet">Create Autofi wallet account</button>
-    </div>
+      <button @click="createNewWallet">Create Autofi wallet account</button>
+    </div> -->
 
     <form v-else @submit.prevent="submitForm" class="form">
       <div class="form-group">
@@ -28,6 +28,8 @@
           <div v-if="amountPerTransaction > amountToFund">Amount per transaction cannot be greater than the total amount to fund.</div>
         </div>
       </div>
+
+      <el-button type="primary">Click me</el-button>
 
       <div class="form-group">
         <label>Frequency of Transactions:</label>
@@ -56,8 +58,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   name: 'App',
 
@@ -65,20 +65,33 @@ export default {
     return {
       account: null,
       wallet: null,
+      signature: null,
       amountToFund: 0,
       currency: 'eth',
       frequency: 'weekly',
       amountPerTransaction: 0,
+
+      // websocket connection
+      ws: null,
     };
   },
 
-  async mounted() {
-    try {
-      const response = await axios.get('http://server:3000/api/hello') // Docker compose will resolve 'server' to the correct IP
-      this.message = response.data.message
-    } catch (err) {
-      console.error(err)
-      this.message = 'Error fetching message'
+  created() {
+    this.ws = new WebSocket('ws://localhost:3000/ws');
+    
+    this.ws.onopen = () => {
+      console.log('WebSocket is connected.');
+    };
+
+    this.ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log('Received:', data);
+    };
+  },
+
+  beforeUnmount() {
+    if (this.ws) {
+      this.ws.close();
     }
   },
 
@@ -94,7 +107,7 @@ export default {
 
   methods: {
     // connects Metamask wallet account with the app
-    async connectWallet() {
+    async connectUserWallet() {
       try {
         // check if Metamask is installed
         if(window.ethereum) {
@@ -102,7 +115,11 @@ export default {
 
           // accounts contains a list of accounts user has allowed us to interact with
           this.account = accounts[0];
+
           console.log(this.account);
+
+          // send an event to server
+          this.ws.send(JSON.stringify({ event: 'userWalletConnected', payload: { accountAddress: this.account } }));
         } else {
           // Metamask is not installed
           console.log('Metamask is not installed. Please consider installing it: https://metamask.io/');
@@ -112,15 +129,8 @@ export default {
       }
     },
 
-    createWallet() {
-      this.wallet = {
-        // TODO initialize wallet object with data
-      };
-      this.isWalletCreated = true;
-    },
-
     toggleCurrency() {
-      this.currency = this.currency === 'ETH' ? 'USDC' : 'ETH';
+      this.currency = this.currency === 'eth' ? 'usdc' : 'eth';
     },
 
     submitForm() {

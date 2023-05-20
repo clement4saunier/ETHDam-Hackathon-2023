@@ -9,12 +9,20 @@ services:
       - "8545:8545"
     volumes:
       - "./contracts:/app"
-  # server:
-  #   build: ./server
-  #   volumes:
-  #     - ./server:/app
-  #   ports:
-  #     - "3000:3000"
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - /data/db
+
+  server:
+    build: ./server
+    volumes:
+      - ./server:/app
+    ports:
+      - "3000:3000"
   # autofi-ui:
   #   build: ./autofi
   #   volumes:

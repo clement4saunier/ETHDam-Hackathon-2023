@@ -1,4 +1,4 @@
-FROM node:18 AS build-stage
+FROM node:18-slim AS build-stage
 
 WORKDIR /
 
