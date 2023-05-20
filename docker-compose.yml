@@ -15,9 +15,9 @@ services:
   #     - ./server:/app
   #   ports:
   #     - "3000:3000"
-  # frontend:
-  #   build: ./abstra-wallet
+  # autofi-ui:
+  #   build: ./autofi
   #   volumes:
-  #     - ./abstra-wallet:/app
+  #     - ./autofi:/app
   #   ports:
-  #     - "8080:8080"
+  #     - 8080:8080

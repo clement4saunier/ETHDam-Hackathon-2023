@@ -4,6 +4,10 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'world' }
 })
 
+fastify.get('/api/hello', async (request, reply) => {
+  return { message: 'Hello from Fastify!' }
+})
+
 const start = async () => {
   try {
     await fastify.listen(3000)
