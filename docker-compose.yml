@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  contracts:
+    build: ./contracts
+    volumes:
+      - ./contracts:/app
+  server:
+    build: ./server
+    volumes:
+      - ./server:/app
+    ports:
+      - "3000:3000"
+  frontend:
+    build: ./abstra-wallet
+    volumes:
+      - ./abstra-wallet:/app
+    ports:
+      - "8080:8080"
