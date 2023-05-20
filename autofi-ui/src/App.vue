@@ -78,7 +78,7 @@ export default {
 
   created() {
     this.ws = new WebSocket('ws://localhost:3000/ws');
-    
+
     this.ws.onopen = () => {
       console.log('WebSocket is connected.');
     };

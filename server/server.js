@@ -14,7 +14,7 @@ fastify.post('/wallet', async (request, reply) => {
   const wallet = request.body;
   const collection = fastify.mongo.db('autofi').collection('wallets');
   const result = await collection.insertOne(wallet);
-  
+
   reply.send(result.ops[0]);
 });
 

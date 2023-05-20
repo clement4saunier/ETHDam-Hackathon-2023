@@ -1,12 +1,8 @@
 FROM node:18-slim AS build-stage
 
-WORKDIR /
-
-COPY package*.json ./
-
-RUN npm install
-
-COPY . .
+WORKDIR /usr/app
+COPY ./ /usr/app
+RUN npm i
 
 RUN npm run build
 
