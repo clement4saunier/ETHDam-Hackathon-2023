@@ -1,18 +1,23 @@
 version: "3.9"
 services:
   contracts:
-    build: ./contracts
-    volumes:
-      - ./contracts:/app
-  server:
-    build: ./server
-    volumes:
-      - ./server:/app
+    container_name: ethdam-contracts
+    build:
+      context: contracts
+      dockerfile: Dockerfile
     ports:
-      - "3000:3000"
-  frontend:
-    build: ./abstra-wallet
+      - "8545:8545"
     volumes:
-      - ./abstra-wallet:/app
-    ports:
-      - "8080:8080"
+      - "./contracts:/app"
+  # server:
+  #   build: ./server
+  #   volumes:
+  #     - ./server:/app
+  #   ports:
+  #     - "3000:3000"
+  # frontend:
+  #   build: ./abstra-wallet
+  #   volumes:
+  #     - ./abstra-wallet:/app
+  #   ports:
+  #     - "8080:8080"
