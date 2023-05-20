@@ -1,2 +1,19 @@
 */node_modules
+
+server/node_modules
+server/.env
+
+autofi-ui/node_modules
+
+contracts/node_modules
+contracts/.env
+contracts/coverage
+contracts/coverage.json
+contracts/typechain
+contracts/typechain-types
+
+# Hardhat files
+cache
+artifacts
+
 init-mongo.js

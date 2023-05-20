@@ -57,7 +57,36 @@
   </div>
 </template>
 
+let ws = null;
+
+function connect() {
+  ws = new WebSocket('ws://localhost:3000/ws');
+
+  ws.onopen = function() {
+    console.log('WebSocket is connected.');
+    // Send a message or do something else
+  };
+
+  ws.onmessage = function(e) {
+    console.log('Received: ' + e.data);
+  };
+
+  ws.onerror = function(e) {
+    console.log(`WebSocket error: ${e}`);
+  };
+
+  ws.onclose = function(e) {
+    console.log(`WebSocket closed with code ${e.code}`);
+    console.log('Attempting to reconnect...');
+    setTimeout(connect, 1000);
+  };
+}
+
+connect();
+
 <script>
+import axios from 'axios';
+
 export default {
   name: 'App',
 
@@ -76,17 +105,10 @@ export default {
     };
   },
 
-  created() {
-    this.ws = new WebSocket('ws://localhost:3000/ws');
-
-    this.ws.onopen = () => {
-      console.log('WebSocket is connected.');
-    };
-
-    this.ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('Received:', data);
-    };
+  async created() {
+    this.connectWS();
+    const response = await axios.get('http://localhost:3000/some');
+    console.log(response);
   },
 
   beforeUnmount() {
@@ -106,6 +128,29 @@ export default {
   },
 
   methods: {
+    connectWS() {
+      this.ws = new WebSocket('ws://localhost:3000/ws');
+
+      this.ws.onopen = function() {
+        console.log('WebSocket is connected.');
+        // Send a message or do something else
+      };
+
+      this.ws.onmessage = function(e) {
+        console.log('Received: ' + e.data);
+      };
+
+      this.ws.onerror = function(e) {
+        console.log(`WebSocket error: ${e}`);
+      };
+
+      this.ws.onclose = function(e) {
+        console.log(`WebSocket closed with code ${e.code}`);
+        console.log('Attempting to reconnect...');
+        setTimeout(this.connectWS, 1000);
+      };
+    },
+
     // connects Metamask wallet account with the app
     async connectUserWallet() {
       try {
