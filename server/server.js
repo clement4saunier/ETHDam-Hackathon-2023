@@ -1,14 +1,12 @@
 const fastify = require('fastify')({ logger: true });
-const fp = require('fastify-plugin');
-const { MongoClient } = require('mongodb');
+require('dotenv').config();
 
-// register mongodb client
-fastify.register(fp(async (fastify) => {
-  const url = process.env.MONGO_URL;
-  const client = await MongoClient.connect(url, { useUnifiedTopology: true });
+fastify.register(require('@fastify/mongodb'), {
+  forceClose: true,
+  url: 'mongodb://mongo/autofi'
+})
 
-  fastify.decorate('mongo', client);
-}));
+// const url = process.env.MONGO_URL;
 
 fastify.post('/wallet', async (request, reply) => {
   const wallet = request.body;
@@ -18,11 +16,6 @@ fastify.post('/wallet', async (request, reply) => {
   reply.send(result.ops[0]);
 });
 
-fastify.listen({ port: 3000 }, err => {
-  if (err) throw err;
-  console.log('Server listening on localhost:', fastify.server.address().port);
-});
-
 // register websocket
 fastify.register(require('@fastify/websocket'));
 
@@ -30,4 +23,9 @@ fastify.get('/ws', { websocket: true }, (connection, req) => {
   connection.socket.on('message', msg => {
     connection.socket.send('Msg from the server');
   });
+});
+
+fastify.listen({ port: 3000 }, err => {
+  if (err) throw err;
+  console.log('Server listening on localhost:', fastify.server.address().port);
 });

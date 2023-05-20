@@ -1,4 +1,4 @@
-FROM node:18 AS app
+FROM node:18-slim AS app
 WORKDIR /app
 
 ADD package*.json /app
