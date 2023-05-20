@@ -3,35 +3,53 @@
     <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
     <h1>Autofi</h1>
 
-    <button v-if="!account" @click="connectWallet">Connect your wallet</button>
+    <div v-if="!account">
+      <button @click="connectWallet">Connect your wallet</button>
+    </div>
+    <div v-else-if="!wallet" class="content-group">
+      <div>Welcome, {{account}}</div>
+      <button @click="createWallet">Create Autofi wallet account</button>
+    </div>
 
     <form v-else @submit.prevent="submitForm" class="form">
       <div class="form-group">
         <label for="amount">Amount to Fund:</label>
-        <input v-model.number="form.amountToFund" type="number" min="0" step="0.01" id="amount" />
-        <button @click.prevent="toggleCurrency" class="toggle-btn">{{form.currency}}</button>
+        <div class="amount-input">
+          <input type="number" min="0" step="0.01" v-model.number="amountToFund" placeholder="Enter an amount..." />
+          <div class="currency-toggle">
+            <input type="radio" id="eth" value="eth" v-model="currency" />
+            <label for="eth">ETH</label>
+            <input type="radio" id="usdc" value="usdc" v-model="currency" />
+            <label for="usdc">USDC</label>
+          </div>
+        </div>
+        <div class="errors">
+          <div v-if="amountToFund <= 0">Amount per transaction must be a positive number.</div>
+          <div v-if="amountPerTransaction > amountToFund">Amount per transaction cannot be greater than the total amount to fund.</div>
+        </div>
       </div>
 
       <div class="form-group">
         <label>Frequency of Transactions:</label>
         <div class="radio-group">
           <label>
-            <input type="radio" value="Daily" v-model="form.frequency" /> Daily
+            <input type="radio" value="daily" v-model="frequency" /> Daily
           </label>
           <label>
-            <input type="radio" value="Weekly" v-model="form.frequency" /> Weekly
+            <input type="radio" value="weekly" v-model="frequency" /> Weekly
           </label>
           <label>
-            <input type="radio" value="Monthly" v-model="form.frequency" /> Monthly
+            <input type="radio" value="monthly" v-model="frequency" /> Monthly
           </label>
         </div>
       </div>
 
       <div class="form-group">
         <label for="transaction-amount">Amount per Transaction:</label>
-        <input v-model.number="form.amountPerTransaction" type="number" min="0" step="0.01" id="transaction-amount" />
+        <input v-model.number="amountPerTransaction" type="number" min="0" step="0.01" id="transaction-amount" />
       </div>
 
+      <p>You can expect to make {{ numberOfTransactions }} transactions.</p>
       <button type="submit" class="submit-btn">Submit</button>
     </form>
   </div>
@@ -42,17 +60,18 @@ import axios from 'axios'
 
 export default {
   name: 'App',
+
   data() {
     return {
       account: null,
-      form: {
-        amountToFund: 0,
-        currency: 'ETH',
-        frequency: 'Weekly',
-        amountPerTransaction: 0,
-      },
+      wallet: null,
+      amountToFund: 0,
+      currency: 'eth',
+      frequency: 'weekly',
+      amountPerTransaction: 0,
     };
   },
+
   async mounted() {
     try {
       const response = await axios.get('http://server:3000/api/hello') // Docker compose will resolve 'server' to the correct IP
@@ -62,6 +81,17 @@ export default {
       this.message = 'Error fetching message'
     }
   },
+
+  computed: {
+    numberOfTransactions() {
+      if (this.amountToFund > 0 && this.amountPerTransaction > 0 && this.amountPerTransaction <= this.amountToFund) {
+        return Math.ceil(this.amountToFund / this.amountPerTransaction);
+      } else {
+        return 'N/A';
+      }
+    },
+  },
+
   methods: {
     // connects Metamask wallet account with the app
     async connectWallet() {
@@ -82,58 +112,38 @@ export default {
       }
     },
 
+    createWallet() {
+      this.wallet = {
+        // TODO initialize wallet object with data
+      };
+      this.isWalletCreated = true;
+    },
+
     toggleCurrency() {
-      this.form.currency = this.form.currency === 'ETH' ? 'USDC' : 'ETH';
+      this.currency = this.currency === 'ETH' ? 'USDC' : 'ETH';
     },
 
     submitForm() {
-      console.log(this.form);
+      // TODO implement form submission,
+      // this would send a transaction to a smart contract.
     },
   },
 }
 </script>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
 .wrapper {
-  width: 80%;
   margin: 2rem auto;
   padding: 20px;
   font-family: Arial, sans-serif;
+}
+
+.content-group {
+  text-align: center;
+}
+
+.errors {
+  color: red;
 }
 
 h1 {
@@ -154,6 +164,11 @@ button {
 button:hover {
   background-color: #0056b3;
 }
+
+/* .logo {
+  display: block;
+  margin: 0 auto 2rem;
+} */
 
 .form {
   margin-top: 30px;
@@ -183,6 +198,30 @@ button:hover {
 
 .submit-btn {
   width: 100%;
+}
+
+.amount-input {
+  display: flex;
+  align-items: center;
+}
+
+.currency-toggle {
+  display: flex;
+  margin-left: 20px;
+}
+
+.currency-toggle input[type="radio"] {
+  display: none;
+}
+
+.currency-toggle label {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.currency-toggle input[type="radio"]:checked + label {
+  background-color: #ccc;
 }
 
 @media (min-width: 1024px) {
