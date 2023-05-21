@@ -27,7 +27,6 @@ services:
       - "27017:27017"
     volumes:
       - /data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
     command: mongod
 
   server:
@@ -42,3 +41,10 @@ services:
       - ./autofi:/app
     ports:
       - 80:8080
+    environment:
+      - FACTORY=0xFa64f316e627aD8360de2476aF0dD9250018CFc5
+
+# bs              | [Entrypoint]: 0xFf6974a7732d12499246056f3aCeF80051bB48f5
+# ethdam-contracts-jobs              | [Factory]: 0xFa64f316e627aD8360de2476aF0dD9250018CFc5 // 0xFa64f316e627aD8360de2476aF0dD9250018CFc5
+
+# ethdam-contracts-jobs              | [DCAWallet]: 0xBAd3D6f2D86596cE67012A061719E13BaF39772e

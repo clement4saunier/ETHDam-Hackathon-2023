@@ -117,6 +117,7 @@ export default {
 
   mounted() {
     // setInterval(this.fetchTransactions, 5000); // poll every 5 seconds
+    console.log("ENV", process.env.FACTORY);
   },
 
   methods: {
