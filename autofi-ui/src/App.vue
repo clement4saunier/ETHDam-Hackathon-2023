@@ -3,16 +3,7 @@
     <el-page-header :icon="null">
       <template #content>
         <div class="flex items-center">
-          <el-avatar
-            :size="32"
-            class="mr-3"
-            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
-          />
-          <div class="text-large font-600 mr-3"> AutoFi </div>
-          <div v-if="account" class="text-sm mr-2" style="color: var(--el-text-color-regular)">
-            {{ truncateEthAddress(account) }}
-          </div>
-          <el-tag>Alpha</el-tag>
+          <img src="../public/Logo.svg" alt="">
           <!-- <el-dropdown trigger="click" @command="handleCommand">
             <el-badge :value="notifications.length" class="item">
               <el-icon name="bell"></el-icon>
@@ -34,6 +25,16 @@
           <el-button type="primary" class="ml-2" @click="connectUserWallet"
             >Connect your wallet</el-button
           >
+        </div>
+        <div v-else class="profile">
+          <span class="addr" style="color: var(--el-text-color-regular)">
+            {{ truncateEthAddress(account) }}
+          </span>
+          <el-avatar
+            :size="32"
+            class="mr-3"
+            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+          />
         </div>
       </template>
     </el-page-header>
@@ -293,6 +294,18 @@ body {
 
 h1 {
   font-family: 'Gilroy-Bold', sans-serif;
+}
+
+.profile {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  transform: scale(1.6);
+  padding-right: 20px;
+}
+
+.profile .addr {
+  padding-top: 10px;
 }
 
 .el-page-header {
