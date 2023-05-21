@@ -63,6 +63,14 @@
       >Add AutoSwap</el-button
     >
 
+        <el-button
+      v-if="account"
+      type="primary"
+      class="ml-2 mt-2 close-btn"
+      @click="deployUserWallet"
+      >Create</el-button
+    >
+
     <div v-if="showAutoSwapForm" class="popup">
       <el-button type="primary" class="ml-2 close-btn" @click="showAutoSwapForm = false"
         >X</el-button
@@ -176,7 +184,7 @@ export default {
     async fetchUserWallet(address) {
       const provider = new ethers.BrowserProvider(window.ethereum, "any");
       const instance = new ethers.Contract(
-        "0xFa64f316e627aD8360de2476aF0dD9250018CFc5",
+        WALLET_FACTORY,
         factoryAbi,
         provider
       );
@@ -185,6 +193,17 @@ export default {
 
       console.log("Wallet:", wallet);
       return wallet;
+    },
+
+    async deployUserWallet() {
+      const provider = new ethers.BrowserProvider(window.ethereum, "any");
+      const instance = new ethers.Contract(
+        WALLET_FACTORY,
+        factoryAbi,
+        await provider.getSigner()
+      );
+
+      await instance.createWallet();
     },
 
     // prove of account ownership with Sismo Connect

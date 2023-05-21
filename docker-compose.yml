@@ -19,7 +19,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - "./contracts:/app"
-    command: "yarn run hardhat run scripts/deploy-test-context.ts --network localhost && "
+    command: "sleep 5 && yarn run hardhat run scripts/deploy-test-context.ts --network localhost"
 
   mongo:
     image: mongo:4.2.24
