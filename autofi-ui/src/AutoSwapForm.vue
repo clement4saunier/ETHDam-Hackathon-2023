@@ -33,7 +33,12 @@
     <input v-model.number="amountPerTransaction" type="number" min="0" step="0.01" id="transaction-amount" />
 
     <p>You can expect to make {{ numberOfTransactions }} swaps.</p>
-    <button type="submit" class="submit-btn" @click.prevent="submitForm">Submit</button>
+    <el-divider></el-divider>
+    <el-button
+      type="primary"
+      class="ml-2 mt-2"
+      @click.prevent="submitForm"
+      >Add AutoSwap</el-button>
   </div>
 </template>
 

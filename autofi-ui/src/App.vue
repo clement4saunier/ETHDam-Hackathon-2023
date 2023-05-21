@@ -70,21 +70,24 @@
       </el-button>
     </el-card>
 
-    <el-button
-      v-if="account"
-      type="primary"
-      class="ml-2 mt-2 close-btn"
-      @click="showAutoSwapForm = true"
-      >Add AutoSwap</el-button
-    >
+    <el-card v-if="account" class="card">
+      <el-button
+        v-if="account"
+        type="primary"
+        disabled
+        class="ml-2 mt-2 close-btn"
+        @click="deployUserWallet"
+        >Create Smart Wallet</el-button
+      >
 
-    <el-button
-      v-if="account"
-      type="primary"
-      class="ml-2 mt-2 close-btn"
-      @click="deployUserWallet"
-      >Create</el-button
-    >
+      <el-button
+        v-if="account"
+        type="primary"
+        class="ml-2 mt-2 close-btn"
+        @click="showAutoSwapForm = true"
+        >Add AutoSwap</el-button
+      >
+    </el-card>
 
     <el-dialog v-model="showAutoSwapForm" :show-close="false">
       <template #header="{ close }">
@@ -144,6 +147,7 @@ export default {
       },
       signature: null,
       showAutoSwapForm: false,
+      showAutoFundForm: false,
       autoSwaps: [],
       notifications: [],
       recentTransactions: [
@@ -171,7 +175,7 @@ export default {
   },
 
   mounted() {
-    // setInterval(this.fetchData, 5000); // poll every 5 seconds
+    // setInterval(this.fetchTransactions, 5000); // poll every 5 seconds
     // console.log('HELO', process.env.VUE_APP_WALLET);
   },
 
