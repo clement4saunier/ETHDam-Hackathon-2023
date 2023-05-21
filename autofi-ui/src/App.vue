@@ -8,10 +8,10 @@
             class="mr-3"
             src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
           />
-          <span class="text-large font-600 mr-3"> AutoFi </span>
-          <span v-if="account" class="text-sm mr-2" style="color: var(--el-text-color-regular)">
+          <div class="text-large font-600 mr-3"> AutoFi </div>
+          <div v-if="account" class="text-sm mr-2" style="color: var(--el-text-color-regular)">
             {{ truncateEthAddress(account) }}
-          </span>
+          </div>
           <el-tag>Alpha</el-tag>
           <!-- <el-dropdown trigger="click" @command="handleCommand">
             <el-badge :value="notifications.length" class="item">
@@ -30,7 +30,7 @@
       </template>
       <template #extra>
         <div v-if="!account" class="flex items-center">
-          <el-button @click="proveAndConnectSismo">Sismo Connect</el-button>
+          <el-button type="primary" @click="proveAndConnectSismo">Sismo Connect</el-button>
           <el-button type="primary" class="ml-2" @click="connectUserWallet"
             >Connect your wallet</el-button
           >
@@ -39,7 +39,7 @@
     </el-page-header>
 
     <el-card v-if="account" class="card">
-      <h2>AutoFi Balances</h2>
+      <h2>AutoFi Balances: {{ wallet }}</h2>
       <p><strong>ETH:</strong> {{ walletBalance.eth }}</p>
       <p><strong>USDC:</strong> {{ walletBalance.usdc }}</p>
       <!-- <p><strong>Wallet Address:</strong> {{ wallet.address }}</p> -->
@@ -103,7 +103,7 @@
 
 <script>
 import axios from 'axios';
-import {ethers} from 'ethers';
+import { ethers } from 'ethers';
 import factoryAbi from './abi/WalletFactory.json';
 import walletAbi from './abi/DCAWallet.json';
 
@@ -141,6 +141,7 @@ export default {
 
   mounted() {
     // setInterval(this.fetchTransactions, 5000); // poll every 5 seconds
+    // console.log('HELO', process.env.VUE_APP_WALLET);
   },
 
   methods: {
@@ -170,7 +171,7 @@ export default {
           // accounts contains a list of accounts user has allowed us to interact with
           this.account = accounts[0];
           console.log(this.account);
-          await this.fetchUserWallet(accounts[0]);
+          this.wallet = await this.fetchUserWallet(accounts[0]);
           await this.fetchData();
         } else {
           // Metamask is not installed
@@ -287,10 +288,21 @@ export default {
 body {
   font-family: 'Gilroy-Medium', sans-serif;
   background-color: #eff3fd;
+  color: black;
 }
 
 h1 {
   font-family: 'Gilroy-Bold', sans-serif;
+}
+
+.el-page-header {
+  padding: 20px;
+  background-color: white;
+}
+
+.el-page-header__header {
+  display: flex;
+  align-items: center;
 }
 
 /* hide the back button of the header */
@@ -301,5 +313,15 @@ h1 {
 
 .el-card {
   border-radius: 15px;
+}
+
+.el-button {
+  background-color: #5A55D2;
+  font-family: 'Gilroy-Bold', sans-serif;
+  padding: 10px;
+}
+
+.el-button:hover {
+  background-color: hsl(214, 89%, 14%);
 }
 </style>
