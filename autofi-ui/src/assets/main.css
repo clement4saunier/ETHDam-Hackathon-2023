@@ -1,12 +1,12 @@
 @import './base.css';
 
-#app {
+/* #app {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
 
   font-weight: normal;
-}
+} */
 
 a,
 .green {
@@ -16,14 +16,14 @@ a,
 }
 
 @media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+  a:hover, button:hover {
+    background-color: hsla(295, 82%, 38%, 0.2);
   }
 }
-
+/* 
 @media (min-width: 1024px) {
   body {
     display: flex;
     place-items: center;
   }
-}
+} */

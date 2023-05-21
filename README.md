@@ -1,11 +1,11 @@
 # README - AutoFi
-`AutoFi ~ Automate your investing`
+`AutoFi ~ Easy DeFi investing`
 
 ## Introduction
 AutoFi is our submission for the ETHDam 2023 hackathon. In this README, we'll provide an overview of our core idea, the solution and tech stack.
 
 ## Project Overview
-AutoFi is an easy-to-use dApp to help users automate their investing. It offers the ability to schedule automated transactions, providing convenience and control. After talking to multiple users with basic crypto experience, we realized a lot of DeFi applications are just too complex if you’re not crypto-native. Therefore, we started our integration with Dollar-cost-averaging (DCA), perhaps the most common investment practice for the everyday person.
+AutoFi is an easy-to-use dApp to help users automate their DeFi investing. It offers the ability to schedule automated transactions, providing convenience and control without giving up custody. After talking to multiple users with basic crypto experience, we realized a lot of DeFi applications are just too complex if you’re not crypto-native. Therefore, we started our integration with Dollar-cost-averaging (DCA), perhaps the most common investment practice for the everyday person.
 
 > **_Why Dollar-cost averaging?_**
 >
