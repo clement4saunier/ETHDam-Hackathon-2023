@@ -1,59 +1,66 @@
 <template>
   <div class="wrapper">
-    <!-- <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" /> -->
-    <h1>Autofi</h1>
+    <el-page-header :icon="null">
+      <template #content>
+        <div class="flex items-center">
+          <el-avatar
+            :size="32"
+            class="mr-3"
+            src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
+          />
+          <span class="text-large font-600 mr-3"> AutoFi </span>
+          <span v-if="account" class="text-sm mr-2" style="color: var(--el-text-color-regular)">
+            {{ truncateEthAddress(account) }}
+          </span>
+          <el-tag>Alpha</el-tag>
+        </div>
+      </template>
+      <template #extra>
+        <div v-if="!account" class="flex items-center">
+          <el-button>Sismo Connect</el-button>
+          <el-button type="primary" class="ml-2" @click="connectUserWallet">Connect your wallet</el-button>
+        </div>
+      </template>
+    </el-page-header>
 
-    <div v-if="!account">
-      <button @click="connectUserWallet">Connect your wallet</button>
+    <el-card v-if="account" class="card">
+      <h2>AutoFi Balances</h2>
+      <p><strong>ETH:</strong> {{ walletBalance.eth }}</p>
+      <p><strong>USDC:</strong> {{ walletBalance.usdc }}</p>
+      <!-- <p><strong>Wallet Address:</strong> {{ wallet.address }}</p> -->
+      <el-button type="primary" class="ml-2" @click="fundWallet">Fund Autofi Wallet</el-button>
+
+      <h3>Recent Transactions</h3>
+      <ul>
+        <li v-for="transaction in recentTransactions" :key="transaction.id">
+          <a :href="`https://blockscan.com/${transaction.link}`" target="_blank">{{ transaction.description }}</a>
+        </li>
+      </ul>
+    </el-card>
+
+    <el-button v-if="account" type="primary" class="ml-2 close-btn" @click="showAutoSwapForm = true">Add AutoSwap</el-button>
+
+    <div v-if="showAutoSwapForm" class="popup">
+      <el-button type="primary" class="ml-2 close-btn" @click="showAutoSwapForm = false">X</el-button>
+      <h2>Add AutoSwap</h2>
+      <AutoSwapForm @closeForm="showAutoSwapForm = false" @submit="handleFormSubmit" />
     </div>
-    <!-- <div v-else-if="!wallet" class="content-group">
-      <div>Welcome, {{account}}</div>
-      <button @click="createNewWallet">Create Autofi wallet account</button>
-    </div> -->
 
-    <form v-else @submit.prevent="submitForm" class="form">
-      <div class="form-group">
-        <label for="amount">Amount to Fund:</label>
-        <div class="amount-input">
-          <input type="number" min="0" step="0.01" v-model.number="amountToFund" placeholder="Enter an amount..." />
-          <div class="currency-toggle">
-            <input type="radio" id="eth" value="eth" v-model="currency" />
-            <label for="eth">ETH</label>
-            <input type="radio" id="usdc" value="usdc" v-model="currency" />
-            <label for="usdc">USDC</label>
+    <!-- List of existing autoSwaps -->
+    <div v-if="autoSwaps.length">
+      <el-card v-for="swap in autoSwaps" :key="swap._id" class="box-card">
+        <template #header>
+          <div class="card-header">
+            <span>AutoSwap for {{ swap.account }}</span>
+            <el-button class="button" text>Operation button</el-button>
           </div>
-        </div>
-        <div class="errors">
-          <div v-if="amountToFund <= 0">Amount per transaction must be a positive number.</div>
-          <div v-if="amountPerTransaction > amountToFund">Amount per transaction cannot be greater than the total amount to fund.</div>
-        </div>
-      </div>
-
-      <el-button type="primary">Click me</el-button>
-
-      <div class="form-group">
-        <label>Frequency of Transactions:</label>
-        <div class="radio-group">
-          <label>
-            <input type="radio" value="daily" v-model="frequency" /> Daily
-          </label>
-          <label>
-            <input type="radio" value="weekly" v-model="frequency" /> Weekly
-          </label>
-          <label>
-            <input type="radio" value="monthly" v-model="frequency" /> Monthly
-          </label>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="transaction-amount">Amount per Transaction:</label>
-        <input v-model.number="amountPerTransaction" type="number" min="0" step="0.01" id="transaction-amount" />
-      </div>
-
-      <p>You can expect to make {{ numberOfTransactions }} transactions.</p>
-      <button type="submit" class="submit-btn">Submit</button>
-    </form>
+        </template>
+        <div class="text item">Amount to swap: {{ swap.amountToSwap }} {{ swap.currency.toUpperCase() }}</div>
+        <div class="text item">Frequency: {{ swap.frequency }}</div>
+        <div class="text item">Amount per Transaction: {{ swap.amountPerTransaction }} {{ swap.currency.toUpperCase() }}</div>
+        <div class="text item">Number of Transactions: {{ swap.numberOfTransactions }}</div>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -86,29 +93,30 @@ connect();
 
 <script>
 import axios from 'axios';
+import AutoSwapForm from './AutoSwapForm.vue';
 
 export default {
   name: 'App',
+
+  components: {
+    AutoSwapForm
+  },
 
   data() {
     return {
       account: null,
       wallet: null,
+      walletBalance: {
+        eth: 0,
+        usdc: 0,
+      },
       signature: null,
-      amountToFund: 0,
-      currency: 'eth',
-      frequency: 'weekly',
-      amountPerTransaction: 0,
+      showAutoSwapForm: false,
+      autoSwaps: [],
 
       // websocket connection
       ws: null,
     };
-  },
-
-  async created() {
-    this.connectWS();
-    const response = await axios.get('http://localhost:3000/some');
-    console.log(response);
   },
 
   beforeUnmount() {
@@ -117,17 +125,12 @@ export default {
     }
   },
 
-  computed: {
-    numberOfTransactions() {
-      if (this.amountToFund > 0 && this.amountPerTransaction > 0 && this.amountPerTransaction <= this.amountToFund) {
-        return Math.ceil(this.amountToFund / this.amountPerTransaction);
-      } else {
-        return 'N/A';
-      }
-    },
+  created() {
+    this.fetchData();
   },
 
   methods: {
+    // TODO not used
     connectWS() {
       this.ws = new WebSocket('ws://localhost:3000/ws');
 
@@ -151,6 +154,17 @@ export default {
       };
     },
 
+    async fetchData() {
+      if (!this.account) return;
+
+      try {
+        this.autoSwaps = await JSON.parse(axios.get(`/autoswaps?account=${this.account}`));
+        console.log(this.autoSwaps);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
     // connects Metamask wallet account with the app
     async connectUserWallet() {
       try {
@@ -160,11 +174,8 @@ export default {
 
           // accounts contains a list of accounts user has allowed us to interact with
           this.account = accounts[0];
-
           console.log(this.account);
-
-          // send an event to server
-          this.ws.send(JSON.stringify({ event: 'userWalletConnected', payload: { accountAddress: this.account } }));
+          await this.fetchData();
         } else {
           // Metamask is not installed
           console.log('Metamask is not installed. Please consider installing it: https://metamask.io/');
@@ -174,135 +185,69 @@ export default {
       }
     },
 
-    toggleCurrency() {
-      this.currency = this.currency === 'eth' ? 'usdc' : 'eth';
+    truncateEthAddress(address) {
+      const truncateRegex = /^(0x[a-zA-Z0-9]{4})[a-zA-Z0-9]+([a-zA-Z0-9]{4})$/;
+      const match = address.match(truncateRegex);
+      if (!match)
+          return address;
+      return match[1] + "\u2026" + match[2];
     },
 
-    submitForm() {
-      // TODO implement form submission,
-      // this would send a transaction to a smart contract.
+    handleFormSubmit(formData) {
+      // Here you would actually perform the swap, using formData.amountToSwap,
+      // formData.currency and formData.frequency
+      console.log('Form data:', formData);
+      this.scheduleSwap(formData);
     },
+
+    async scheduleSwap(formData) {
+      // form validation logic here
+      if (this.amountToFund <= 0 || this.amountPerTransaction <= 0 || this.amountPerTransaction > this.amountToFund) {
+        console.log('Invalid form data');
+        return;
+      }
+
+      try {
+        const response = await axios.post('/schedule-autoswap', {
+          account: this.account,
+          amountToFund: formData.amountToSwap,
+          currency: formData.currency,
+          frequency: formData.frequency,
+          amountPerTransaction: formData.amountPerTransaction,
+          numberOfTransactions: formData.numberOfTransactions,
+        });
+
+        if (response.data.success) {
+          // handle successful form submission here
+          console.log('Swap scheduled successfully');
+          // You may clear the form here
+          await this.fetchData();
+        } else {
+          // handle failed form submission here
+          console.log('Failed to schedule swap:', response.data.error);
+        }
+      } catch (error) {
+        // handle network error here
+        console.log('Network error:', error);
+      }
+    }
   },
 }
 </script>
 
-<style scoped>
-.wrapper {
-  margin: 2rem auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-.content-group {
-  text-align: center;
-}
-
-.errors {
-  color: red;
+<style>
+body {
+  font-family: 'Gilroy-Medium', sans-serif;
+  background-color: #EFF3FD;
 }
 
 h1 {
-  color: #333;
-  text-align: center;
+  font-family: 'Gilroy-Bold', sans-serif;
 }
 
-button {
-  padding: 10px 20px;
-  margin-top: 10px;
-  border: none;
-  background-color: #007BFF;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-/* .logo {
-  display: block;
-  margin: 0 auto 2rem;
-} */
-
-.form {
-  margin-top: 30px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.radio-group {
-  display: flex;
-  justify-content: space-between;
-}
-
-.radio-group label {
-  flex: 1;
-}
-
-.toggle-btn {
-  margin-left: 10px;
-}
-
-.submit-btn {
-  width: 100%;
-}
-
-.amount-input {
-  display: flex;
-  align-items: center;
-}
-
-.currency-toggle {
-  display: flex;
-  margin-left: 20px;
-}
-
-.currency-toggle input[type="radio"] {
+/* hide the back button of the header */
+.el-page-header__left >
+.el-page-header__back, .el-divider--vertical {
   display: none;
-}
-
-.currency-toggle label {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
-.currency-toggle input[type="radio"]:checked + label {
-  background-color: #ccc;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
 }
 </style>

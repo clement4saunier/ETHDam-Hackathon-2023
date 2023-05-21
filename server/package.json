@@ -3,8 +3,11 @@
     "fastify": "^4.17.0"
   },
   "dependencies": {
+    "@fastify/cors": "^8.2.1",
     "@fastify/mongodb": "^7.0.0",
     "@fastify/websocket": "^8.1.0",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "mongoose": "^7.2.0",
+    "node-cron": "^3.0.2"
   }
 }
