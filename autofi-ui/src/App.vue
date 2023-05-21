@@ -81,6 +81,8 @@
 import axios from 'axios';
 import { SismoConnect, AuthType } from "@sismo-core/sismo-connect-client";
 
+const WALLET_FACTORY = "0xFa64f316e627aD8360de2476aF0dD9250018CFc5";
+
 import AutoSwapForm from './AutoSwapForm.vue';
 
 export default {
@@ -105,46 +107,15 @@ export default {
     };
   },
 
-  beforeUnmount() {
-    if (this.ws) {
-      this.ws.close();
-    }
-  },
-
   async created() {
     await this.fetchData();
   },
 
   mounted() {
     // setInterval(this.fetchTransactions, 5000); // poll every 5 seconds
-    console.log("ENV", process.env.FACTORY);
   },
 
   methods: {
-    // TODO not used
-    connectWS() {
-      this.ws = new WebSocket('ws://localhost:3000/ws');
-
-      this.ws.onopen = function() {
-        console.log('WebSocket is connected.');
-        // Send a message or do something else
-      };
-
-      this.ws.onmessage = function(e) {
-        console.log('Received: ' + e.data);
-      };
-
-      this.ws.onerror = function(e) {
-        console.log(`WebSocket error: ${e}`);
-      };
-
-      this.ws.onclose = function(e) {
-        console.log(`WebSocket closed with code ${e.code}`);
-        console.log('Attempting to reconnect...');
-        setTimeout(this.connectWS, 1000);
-      };
-    },
-
     async fetchData() {
       if (!this.account) return;
 
@@ -155,11 +126,6 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    },
-
-    async fetchTransactions() {
-      const response = await axios.get(`https://api.etherscan.io/api?module=account&action=txlist&address=${this.account}&startblock=0&endblock=99999999&sort=desc&apikey=YourEtherscanAPIKey`);
-      this.notifications = response.data.result || [];
     },
 
     handleCommand(notification) {
