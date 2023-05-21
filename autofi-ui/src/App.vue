@@ -79,6 +79,8 @@
 
 <script>
 import axios from 'axios';
+import { SismoConnect, AuthType } from "@sismo-core/sismo-connect-client";
+
 import AutoSwapForm from './AutoSwapForm.vue';
 
 export default {
@@ -109,8 +111,8 @@ export default {
     }
   },
 
-  created() {
-    this.fetchData();
+  async created() {
+    await this.fetchData();
   },
 
   mounted() {
@@ -179,6 +181,33 @@ export default {
           console.log('Metamask is not installed. Please consider installing it: https://metamask.io/');
         }
       } catch (error) {
+        console.error(error);
+      }
+    },
+
+    // prove of account ownership with Sismo Connect
+    async proveAndConnectSismo() {
+      try {
+        // use Sismo Connect for seamless onboarding for those new to crypto
+        const sismoConnect = new SismoConnect({
+          appId: '0x5f1dc504b19e9058c3560e5c4866acba',
+          devMode: {
+            // will use the Dev Sismo Data Vault https://dev.vault-beta.sismo.io/
+            enabled: true, 
+            // Display a modal at the end of the proof generation flow with the response 
+            // to help you generate response for development purpose
+            displayRawResponse: true,
+          }
+        });
+        const auth = { 
+            // user should prove that they own a EVM account
+            authType: AuthType.EVM_ACCOUNT,
+        };
+        sismoConnect.request({ auth });
+        const secondAuth = { authType: AuthType.TWITTER };
+        sismoConnect.request({ auths: [auth, secondAuth] });
+      } catch (error) {
+        // Handle any errors that occur during the connection process
         console.error(error);
       }
     },
