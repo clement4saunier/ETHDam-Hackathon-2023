@@ -93,11 +93,10 @@
       <template #header="{ close }">
         <AutoSwapForm @closeForm="close = false" @submit="handleFormSubmit" />
       </template>
-      This is dialog content.
     </el-dialog>
 
     <!-- List of existing autoSwaps -->
-    <el-container v-if="autoSwaps.length">
+    <div v-if="autoSwaps.length">
       <el-card v-for="swap in autoSwaps" :key="swap._id" class="box-card">
         <template #header>
           <div class="card-header">
@@ -114,7 +113,7 @@
         </div>
         <div class="text item">Number of Transactions: {{ swap.numberOfTransactions }}</div>
       </el-card>
-    </el-container>
+    </div>
   </el-space>
 </template>
 
