@@ -9,11 +9,12 @@ import { getContractFactory } from "@nomiclabs/hardhat-ethers/types";
 
 describe("DCAWallet", function () {
   async function deployWalletAndContext() {
+    const [owner] = await ethers.getSigners();
     const EntryPoint = await ethers.getContractFactory("EntryPoint");
     const entryPoint = await EntryPoint.deploy();
 
     const Wallet = await ethers.getContractFactory("DCAWallet");
-    const wallet = await Wallet.deploy(entryPoint.address);
+    const wallet = await Wallet.deploy(owner.address, entryPoint.address);
 
     return { wallet, entryPoint };
   }
@@ -116,7 +117,6 @@ describe("DCAWallet", function () {
       let flatSignature = await owner.signMessage(ethers.utils.arrayify(messageHash));
       let sig = ethers.utils.splitSignature(flatSignature);
       let recovered = await wallet.verifyHash(messageHash, sig.v, sig.r, sig.s);
-
 
       const swapCall = wallet.interface.encodeFunctionData("swap", [
         fromToken.address,

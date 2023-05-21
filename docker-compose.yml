@@ -10,6 +10,17 @@ services:
     volumes:
       - "./contracts:/app"
 
+  contract_jobs:
+    container_name: ethdam-contracts-jobs
+    depends_on:
+      - contracts
+    build:
+      context: contracts
+      dockerfile: Dockerfile
+    volumes:
+      - "./contracts:/app"
+    command: "yarn run hardhat run scripts/deploy-test-context.ts && "
+
   mongo:
     image: mongo:4.2.24
     ports:
@@ -25,9 +36,9 @@ services:
       - ./server:/app
     ports:
       - "3000:3000"
-  # autofi-ui:
-  #   build: ./autofi
-  #   volumes:
-  #     - ./autofi:/app
-  #   ports:
-  #     - 8080:8080
+  autofi-ui:
+    build: ./autofi-ui
+    volumes:
+      - ./autofi:/app
+    ports:
+      - 80:8080

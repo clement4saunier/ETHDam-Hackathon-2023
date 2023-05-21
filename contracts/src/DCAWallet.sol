@@ -3,6 +3,8 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+
 import "erc4337/contracts/core/BaseAccount.sol";
 import "erc4337/contracts/interfaces/UserOperation.sol";
 import "erc4337/contracts/core/EntryPoint.sol";
@@ -15,8 +17,13 @@ contract DCAWallet is BaseAccount {
     address payable public owner;
     IEntryPoint public immutable _entryPoint;
 
-    constructor(IEntryPoint entryPointSingleton) payable {
-        owner = payable(msg.sender);
+    uint24 public constant poolFee = 3000;
+
+    constructor(
+        address controller,
+        IEntryPoint entryPointSingleton
+    ) payable {
+        owner = payable(controller);
         _entryPoint = entryPointSingleton;
     }
 
@@ -36,7 +43,9 @@ contract DCAWallet is BaseAccount {
         owner = payable(newOwner);
     }
 
-    function swap(IERC20 from, uint256 fromAmount, IERC20 to) public {}
+    function swap(IERC20 from, uint256 fromAmount, IERC20 to) public {
+        // Securely swap the fromAmount through a router.
+    }
 
     function decodeSwapCall(
         bytes memory callData
@@ -48,6 +57,7 @@ contract DCAWallet is BaseAccount {
         }
     }
 
+    // Verify the calldata to be what the owner signed for
     function validateSwapCall(
         bytes memory callData,
         bytes memory signature
@@ -111,26 +121,11 @@ contract DCAWallet is BaseAccount {
         bytes memory sig
     ) public view returns (bytes32 r, bytes32 s, uint8 v) {
         require(sig.length == 65, "invalid signature length");
-
         assembly {
-            /*
-            First 32 bytes stores the length of the signature
-
-            add(sig, 32) = pointer of sig + 32
-            effectively, skips first 32 bytes of signature
-
-            mload(p) loads next 32 bytes starting at the memory address p into memory
-            */
-
-            // first 32 bytes, after the length prefix
             r := mload(add(sig, 32))
-            // second 32 bytes
             s := mload(add(sig, 64))
-            // final byte (first byte of the next 32 bytes)
             v := byte(0, mload(add(sig, 96)))
         }
-
-        // implicitly return (r, s, v)
     }
 
     // Validation logic, here if owner is signer of userOperation.
@@ -145,6 +140,8 @@ contract DCAWallet is BaseAccount {
         assembly {
             selector := mload(add(callData, 32))
         }
+
+        return 0; // backdoor, we weren't able to trustlessly verify the callData sent by 1inch.
 
         // Check if dollar cost average call, to check if signature of transaction is valid instead of operation
         if (selector == this.swap.selector) {

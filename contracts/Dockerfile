@@ -1,4 +1,4 @@
-FROM node:18-slim AS app
+FROM node:18 AS app
 WORKDIR /app
 
 ADD package*.json /app
@@ -8,6 +8,8 @@ RUN yarn
 ADD . /app
 
 ENV PORT 8545
+ENV NODE_OPTIONS --openssl-legacy-provider
+
 EXPOSE $PORT
 
 CMD yarn run hardhat node
