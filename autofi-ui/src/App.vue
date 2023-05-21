@@ -1,5 +1,6 @@
 <template>
-  <div class="wrapper">
+
+  <el-space direction="vertical" alignment="center" :size="30">
     <el-page-header :icon="null">
       <template #content>
         <div class="flex items-center">
@@ -44,7 +45,14 @@
       <p><strong>ETH:</strong> {{ walletBalance.eth }}</p>
       <p><strong>USDC:</strong> {{ walletBalance.usdc }}</p>
       <!-- <p><strong>Wallet Address:</strong> {{ wallet.address }}</p> -->
-      <el-button type="primary" class="ml-2" @click="fundWallet">Fund Autofi Wallet</el-button>
+      <el-dialog v-model="showAutoFundForm" :show-close="false">
+        <template #header="{ close }">
+          <AutoFundForm @closeForm="close = false" @submit="handleFundSubmit" />
+        </template>
+        This is dialog content.
+      </el-dialog>
+
+      <el-divider />
 
       <h3>Recent Transactions</h3>
       <ul>
@@ -54,6 +62,12 @@
           }}</a>
         </li>
       </ul>
+
+      <el-divider />
+
+      <el-button type="primary" class="ml-2" @click="showAutoFundForm = true">
+        Deposit Funds
+      </el-button>
     </el-card>
 
     <el-button
@@ -64,7 +78,7 @@
       >Add AutoSwap</el-button
     >
 
-        <el-button
+    <el-button
       v-if="account"
       type="primary"
       class="ml-2 mt-2 close-btn"
@@ -72,16 +86,15 @@
       >Create</el-button
     >
 
-    <div v-if="showAutoSwapForm" class="popup">
-      <el-button type="primary" class="ml-2 close-btn" @click="showAutoSwapForm = false"
-        >X</el-button
-      >
-      <h2>Add AutoSwap</h2>
-      <AutoSwapForm @closeForm="showAutoSwapForm = false" @submit="handleFormSubmit" />
-    </div>
+    <el-dialog v-model="showAutoSwapForm" :show-close="false">
+      <template #header="{ close }">
+        <AutoSwapForm @closeForm="close = false" @submit="handleFormSubmit" />
+      </template>
+      This is dialog content.
+    </el-dialog>
 
     <!-- List of existing autoSwaps -->
-    <div v-if="autoSwaps.length">
+    <el-container v-if="autoSwaps.length">
       <el-card v-for="swap in autoSwaps" :key="swap._id" class="box-card">
         <template #header>
           <div class="card-header">
@@ -98,8 +111,8 @@
         </div>
         <div class="text item">Number of Transactions: {{ swap.numberOfTransactions }}</div>
       </el-card>
-    </div>
-  </div>
+    </el-container>
+  </el-space>
 </template>
 
 <script>
@@ -126,13 +139,30 @@ export default {
       account: null,
       wallet: null,
       walletBalance: {
-        eth: 0,
-        usdc: 0,
+        eth: 0.00013494,
+        usdc: 0.24517699,
       },
       signature: null,
       showAutoSwapForm: false,
       autoSwaps: [],
       notifications: [],
+      recentTransactions: [
+        {
+          id: 1,
+          link: 123,
+          description: 'Account created'
+        },
+        {
+          id: 1,
+          link: 123,
+          description: 'Funds transferred'
+        },
+        {
+          id: 2,
+          link: 123,
+          description: 'Position signed'
+        },
+      ],
     };
   },
 
@@ -141,7 +171,7 @@ export default {
   },
 
   mounted() {
-    // setInterval(this.fetchTransactions, 5000); // poll every 5 seconds
+    // setInterval(this.fetchData, 5000); // poll every 5 seconds
     // console.log('HELO', process.env.VUE_APP_WALLET);
   },
 
@@ -296,6 +326,10 @@ h1 {
   font-family: 'Gilroy-Bold', sans-serif;
 }
 
+button {
+  padding: 50px;
+}
+
 .profile {
   display: flex;
   flex-direction: row;
@@ -306,6 +340,10 @@ h1 {
 
 .profile .addr {
   padding-top: 10px;
+}
+
+.el-space, .el-space__item {
+  width: 100%;
 }
 
 .el-page-header {
@@ -332,6 +370,7 @@ h1 {
   background-color: #5A55D2;
   font-family: 'Gilroy-Bold', sans-serif;
   padding: 10px;
+  border-radius: 5px;
 }
 
 .el-button:hover {
