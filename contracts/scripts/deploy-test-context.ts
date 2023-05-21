@@ -11,9 +11,7 @@ async function main() {
   const Factory = await ethers.getContractFactory("WalletFactory");
   const factory = await Factory.deploy(entrypoint.address);
 
-  const DCAWallet = await ethers.getContractFactory("DCAWallet");
   const dcaWallet = await factory.createWallet();
-  
 
   console.log(`[Entrypoint]: ${entrypoint.address}`);
   console.log(`[Factory]: ${factory.address}`);

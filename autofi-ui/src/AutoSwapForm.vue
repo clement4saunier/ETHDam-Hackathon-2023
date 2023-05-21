@@ -3,23 +3,19 @@
     <h3>AutoSwap Form</h3>
 
     <div class="form-group">
-      <label for="amount">Amount to Swap:</label>
+      <label for="amount">Total budget</label>
       <div class="amount-input">
-        <input
-          type="number"
-          min="0"
-          step="0.01"
-          v-model.number="amountToSwap"
-          placeholder="Enter an amount..."
-        />
-        <div class="currency-toggle">
+        <input type="number" min="0" step="0.01" v-model.number="amountToSwap" placeholder="Enter an amount..." />
+        <span class="currency-toggle">
           <input type="radio" id="eth" value="eth" v-model="currency" />
           <label for="eth">ETH</label>
           <input type="radio" id="usdc" value="usdc" v-model="currency" />
           <label for="usdc">USDC</label>
-        </div>
+        </span>
       </div>
     </div>
+
+    <el-divider></el-divider>
 
     <div class="form-group">
       <label>Frequency of Swaps:</label>
@@ -31,13 +27,13 @@
       </div>
     </div>
 
-    <input
-      v-model.number="amountPerTransaction"
-      type="number"
-      min="0"
-      step="0.01"
-      id="transaction-amount"
-    />
+    <el-divider></el-divider>
+
+    <label for="amount">Amount per Swap</label>
+    <div>
+      <input v-model.number="amountPerTransaction" type="number" min="0" step="0.01" id="transaction-amount" />
+    </div>
+
 
     <p>You can expect to make {{ numberOfTransactions }} swaps.</p>
     <el-divider></el-divider>
