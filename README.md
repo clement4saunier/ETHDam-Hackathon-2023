@@ -1,5 +1,5 @@
 # README - AutoFi
-`AutoFi ~ Automate your investing`
+`AutoFi ~ Easy DeFi investing`
 
 ## Introduction
 AutoFi is our submission for the ETHDam 2023 hackathon. In this README, we'll provide an overview of our core idea, the solution and tech stack.
