@@ -13,7 +13,7 @@
             {{ truncateEthAddress(account) }}
           </span>
           <el-tag>Alpha</el-tag>
-          <el-dropdown trigger="click" @command="handleCommand">
+          <!-- <el-dropdown trigger="click" @command="handleCommand">
             <el-badge :value="notifications.length" class="item">
               <el-icon name="bell"></el-icon>
             </el-badge>
@@ -25,12 +25,12 @@
                   <el-link :href="`https://etherscan.io/tx/${notification.hash}`" target="_blank">{{notification.hash}}</el-link>
               </el-dropdown-item>
             </el-dropdown-menu>
-          </el-dropdown>
+          </el-dropdown> -->
         </div>
       </template>
       <template #extra>
         <div v-if="!account" class="flex items-center">
-          <el-button>Sismo Connect</el-button>
+          <el-button @click="proveAndConnectSismo">Sismo Connect</el-button>
           <el-button type="primary" class="ml-2" @click="connectUserWallet">Connect your wallet</el-button>
         </div>
       </template>
@@ -276,5 +276,9 @@ h1 {
 .el-page-header__left >
 .el-page-header__back, .el-divider--vertical {
   display: none;
+}
+
+.el-card {
+  border-radius: 15px;
 }
 </style>

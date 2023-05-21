@@ -15,5 +15,3 @@ contracts/typechain-types
 # Hardhat files
 cache
 artifacts
-
-init-mongo.js
