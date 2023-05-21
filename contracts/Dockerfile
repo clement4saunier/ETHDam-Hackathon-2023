@@ -12,4 +12,4 @@ ENV NODE_OPTIONS --openssl-legacy-provider
 
 EXPOSE $PORT
 
-CMD yarn run hardhat node
+CMD bash -c "sleep 10; yarn run hardhat run scripts/deploy-test-context.ts --network localhost" & yarn run hardhat node

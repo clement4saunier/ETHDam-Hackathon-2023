@@ -10,19 +10,8 @@ services:
     volumes:
       - "./contracts:/app"
 
-  contract_jobs:
-    container_name: ethdam-contracts-jobs
-    depends_on:
-      - contracts
-    build:
-      context: contracts
-      dockerfile: Dockerfile
-    volumes:
-      - "./contracts:/app"
-    command: "sleep 5 && yarn run hardhat run scripts/deploy-test-context.ts --network localhost"
-
   mongo:
-    image: mongo:4.2.24
+    image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
@@ -35,6 +24,15 @@ services:
       - ./server:/app
     ports:
       - "3000:3000"
+  server_cron:
+    build: ./server
+    volumes:
+      - ./server:/app
+    depends_on:
+      - contracts
+    restart: on-failure
+
+    command: bash -c "npm i && node swap-cron.js"
   autofi-ui:
     build: ./autofi-ui
     volumes:

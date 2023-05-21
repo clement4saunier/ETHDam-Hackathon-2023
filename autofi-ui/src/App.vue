@@ -140,7 +140,7 @@ export default {
   },
 
   mounted() {
-    // setInterval(this.fetchTransactions, 5000); // poll every 5 seconds
+    // setInterval(this.f, 5000); // poll every 5 seconds
   },
 
   methods: {
@@ -258,6 +258,7 @@ export default {
       try {
         const response = await axios.post('/schedule-autoswap', {
           account: this.account,
+          wallet: this.wallet,
           amountToFund: formData.amountToFund,
           currency: formData.currency,
           frequency: formData.frequency,

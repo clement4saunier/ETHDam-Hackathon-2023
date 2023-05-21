@@ -26,7 +26,7 @@ const config: HardhatUserConfig = {
     runOnCompile: true,
     clear: true,
     flat: true,
-    only: ['DCAWallet', 'WalletFactory'],
+    only: ['DCAWallet', 'WalletFactory', 'EntryPoint'],
     spacing: 2,
     format: "minimal",
   },

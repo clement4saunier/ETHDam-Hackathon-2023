@@ -33,10 +33,10 @@ fastify.post('/schedule-autoswap', async (request, reply) => {
   console.log(autoswap);
   try {
       const result = await db.collection('autoswaps').insertOne(autoswap);
-      reply.code(201).send(result.ops[0]); // send back the created object
+      reply.code(201).send(); // send back the created object
   } catch (err) {
       fastify.log.error(err);
-      reply.code(500).send({ error: 'Failed to insert data' });
+      // reply.code(500).send({ error: 'Failed to insert data' });
   }
 });
 

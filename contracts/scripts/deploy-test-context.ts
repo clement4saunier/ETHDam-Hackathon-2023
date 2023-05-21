@@ -1,6 +1,8 @@
 import { ethers } from "hardhat";
 
 async function main() {
+  console.log("Deploying contracts...");
+  
   const [owner] = await ethers.getSigners();
 
   const Entrypoint = await ethers.getContractFactory("EntryPoint");
@@ -11,7 +13,6 @@ async function main() {
 
   const DCAWallet = await ethers.getContractFactory("DCAWallet");
   const dcaWallet = await factory.createWallet();
-
   
 
   console.log(`[Entrypoint]: ${entrypoint.address}`);
