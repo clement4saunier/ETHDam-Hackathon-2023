@@ -27,7 +27,6 @@ services:
       - "27017:27017"
     volumes:
       - /data/db
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
     command: mongod
 
   server:
