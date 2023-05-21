@@ -13,6 +13,19 @@
             {{ truncateEthAddress(account) }}
           </span>
           <el-tag>Alpha</el-tag>
+          <el-dropdown trigger="click" @command="handleCommand">
+            <el-badge :value="notifications.length" class="item">
+              <el-icon name="bell"></el-icon>
+            </el-badge>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item v-if="!notifications.length">
+                No transactions
+              </el-dropdown-item>
+              <el-dropdown-item v-for="notification in notifications" :key="notification.hash" :command="notification">
+                  <el-link :href="`https://etherscan.io/tx/${notification.hash}`" target="_blank">{{notification.hash}}</el-link>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </template>
       <template #extra>
@@ -38,7 +51,7 @@
       </ul>
     </el-card>
 
-    <el-button v-if="account" type="primary" class="ml-2 close-btn" @click="showAutoSwapForm = true">Add AutoSwap</el-button>
+    <el-button v-if="account" type="primary" class="ml-2 mt-2 close-btn" @click="showAutoSwapForm = true">Add AutoSwap</el-button>
 
     <div v-if="showAutoSwapForm" class="popup">
       <el-button type="primary" class="ml-2 close-btn" @click="showAutoSwapForm = false">X</el-button>
@@ -52,10 +65,10 @@
         <template #header>
           <div class="card-header">
             <span>AutoSwap for {{ swap.account }}</span>
-            <el-button class="button" text>Operation button</el-button>
+            <el-button class="button" text>Modify</el-button>
           </div>
         </template>
-        <div class="text item">Amount to swap: {{ swap.amountToSwap }} {{ swap.currency.toUpperCase() }}</div>
+        <div class="text item">Amount to swap: {{ swap.amountToFund }} {{ swap.currency.toUpperCase() }}</div>
         <div class="text item">Frequency: {{ swap.frequency }}</div>
         <div class="text item">Amount per Transaction: {{ swap.amountPerTransaction }} {{ swap.currency.toUpperCase() }}</div>
         <div class="text item">Number of Transactions: {{ swap.numberOfTransactions }}</div>
@@ -63,33 +76,6 @@
     </div>
   </div>
 </template>
-
-let ws = null;
-
-function connect() {
-  ws = new WebSocket('ws://localhost:3000/ws');
-
-  ws.onopen = function() {
-    console.log('WebSocket is connected.');
-    // Send a message or do something else
-  };
-
-  ws.onmessage = function(e) {
-    console.log('Received: ' + e.data);
-  };
-
-  ws.onerror = function(e) {
-    console.log(`WebSocket error: ${e}`);
-  };
-
-  ws.onclose = function(e) {
-    console.log(`WebSocket closed with code ${e.code}`);
-    console.log('Attempting to reconnect...');
-    setTimeout(connect, 1000);
-  };
-}
-
-connect();
 
 <script>
 import axios from 'axios';
@@ -113,9 +99,7 @@ export default {
       signature: null,
       showAutoSwapForm: false,
       autoSwaps: [],
-
-      // websocket connection
-      ws: null,
+      notifications: [],
     };
   },
 
@@ -127,6 +111,10 @@ export default {
 
   created() {
     this.fetchData();
+  },
+
+  mounted() {
+    // setInterval(this.fetchTransactions, 5000); // poll every 5 seconds
   },
 
   methods: {
@@ -158,11 +146,21 @@ export default {
       if (!this.account) return;
 
       try {
-        this.autoSwaps = await JSON.parse(axios.get(`/autoswaps?account=${this.account}`));
+        const response = await axios.get(`/autoswaps?account=${this.account}`);
+        this.autoSwaps = response.data;
         console.log(this.autoSwaps);
       } catch (error) {
         console.error(error);
       }
+    },
+
+    async fetchTransactions() {
+      const response = await axios.get(`https://api.etherscan.io/api?module=account&action=txlist&address=${this.account}&startblock=0&endblock=99999999&sort=desc&apikey=YourEtherscanAPIKey`);
+      this.notifications = response.data.result || [];
+    },
+
+    handleCommand(notification) {
+      window.open(`https://blockscan.com/eth/tx/${notification.hash}`, '_blank');
     },
 
     // connects Metamask wallet account with the app
@@ -194,7 +192,7 @@ export default {
     },
 
     handleFormSubmit(formData) {
-      // Here you would actually perform the swap, using formData.amountToSwap,
+      // Here you would actually perform the swap, using formData.amountToFund,
       // formData.currency and formData.frequency
       console.log('Form data:', formData);
       this.scheduleSwap(formData);
@@ -210,7 +208,7 @@ export default {
       try {
         const response = await axios.post('/schedule-autoswap', {
           account: this.account,
-          amountToFund: formData.amountToSwap,
+          amountToFund: formData.amountToFund,
           currency: formData.currency,
           frequency: formData.frequency,
           amountPerTransaction: formData.amountPerTransaction,
