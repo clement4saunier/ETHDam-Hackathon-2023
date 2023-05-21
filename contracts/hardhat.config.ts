@@ -2,6 +2,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 
 import "hardhat-gas-reporter";
+import "hardhat-abi-exporter";
 
 const config: HardhatUserConfig = {
   paths: {
@@ -19,6 +20,15 @@ const config: HardhatUserConfig = {
     // gasPrice: 11,
     coinmarketcap: "4c053119-3502-47be-a3e9-e7c71f53c126",
     token: "ETH",
+  },
+  abiExporter: {
+    path: './abi',
+    runOnCompile: true,
+    clear: true,
+    flat: true,
+    only: ['DCAWallet', 'WalletFactory'],
+    spacing: 2,
+    format: "minimal",
   },
   solidity: "0.8.18"
 };

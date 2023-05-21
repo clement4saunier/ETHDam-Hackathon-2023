@@ -19,7 +19,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - "./contracts:/app"
-    command: "yarn run hardhat run scripts/deploy-test-context.ts && "
+    command: "yarn run hardhat run scripts/deploy-test-context.ts --network localhost && "
 
   mongo:
     image: mongo:4.2.24
@@ -40,7 +40,7 @@ services:
     volumes:
       - ./autofi:/app
     ports:
-      - 80:8080
+      - "5173:5173"
     environment:
       - FACTORY=0xFa64f316e627aD8360de2476aF0dD9250018CFc5
 

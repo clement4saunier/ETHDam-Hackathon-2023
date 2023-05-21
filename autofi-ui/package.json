@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vitest",
@@ -14,6 +14,7 @@
     "@sismo-core/sismo-connect-client": "0.0.11",
     "axios": "^1.4.0",
     "element-plus": "^2.3.5",
+    "ethers": "^6.4.0",
     "pinia": "^2.0.36",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0"

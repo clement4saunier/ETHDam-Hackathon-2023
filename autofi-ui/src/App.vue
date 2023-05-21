@@ -31,7 +31,9 @@
       <template #extra>
         <div v-if="!account" class="flex items-center">
           <el-button @click="proveAndConnectSismo">Sismo Connect</el-button>
-          <el-button type="primary" class="ml-2" @click="connectUserWallet">Connect your wallet</el-button>
+          <el-button type="primary" class="ml-2" @click="connectUserWallet"
+            >Connect your wallet</el-button
+          >
         </div>
       </template>
     </el-page-header>
@@ -46,15 +48,25 @@
       <h3>Recent Transactions</h3>
       <ul>
         <li v-for="transaction in recentTransactions" :key="transaction.id">
-          <a :href="`https://blockscan.com/${transaction.link}`" target="_blank">{{ transaction.description }}</a>
+          <a :href="`https://blockscan.com/${transaction.link}`" target="_blank">{{
+            transaction.description
+          }}</a>
         </li>
       </ul>
     </el-card>
 
-    <el-button v-if="account" type="primary" class="ml-2 mt-2 close-btn" @click="showAutoSwapForm = true">Add AutoSwap</el-button>
+    <el-button
+      v-if="account"
+      type="primary"
+      class="ml-2 mt-2 close-btn"
+      @click="showAutoSwapForm = true"
+      >Add AutoSwap</el-button
+    >
 
     <div v-if="showAutoSwapForm" class="popup">
-      <el-button type="primary" class="ml-2 close-btn" @click="showAutoSwapForm = false">X</el-button>
+      <el-button type="primary" class="ml-2 close-btn" @click="showAutoSwapForm = false"
+        >X</el-button
+      >
       <h2>Add AutoSwap</h2>
       <AutoSwapForm @closeForm="showAutoSwapForm = false" @submit="handleFormSubmit" />
     </div>
@@ -68,9 +80,13 @@
             <el-button class="button" text>Modify</el-button>
           </div>
         </template>
-        <div class="text item">Amount to swap: {{ swap.amountToFund }} {{ swap.currency.toUpperCase() }}</div>
+        <div class="text item">
+          Amount to swap: {{ swap.amountToFund }} {{ swap.currency.toUpperCase() }}
+        </div>
         <div class="text item">Frequency: {{ swap.frequency }}</div>
-        <div class="text item">Amount per Transaction: {{ swap.amountPerTransaction }} {{ swap.currency.toUpperCase() }}</div>
+        <div class="text item">
+          Amount per Transaction: {{ swap.amountPerTransaction }} {{ swap.currency.toUpperCase() }}
+        </div>
         <div class="text item">Number of Transactions: {{ swap.numberOfTransactions }}</div>
       </el-card>
     </div>
@@ -79,6 +95,10 @@
 
 <script>
 import axios from 'axios';
+import {ethers} from 'ethers';
+import factoryAbi from './abi/WalletFactory.json';
+import walletAbi from './abi/DCAWallet.json';
+
 import { SismoConnect, AuthType } from "@sismo-core/sismo-connect-client";
 
 import AutoSwapForm from './AutoSwapForm.vue';
@@ -176,6 +196,7 @@ export default {
           // accounts contains a list of accounts user has allowed us to interact with
           this.account = accounts[0];
           console.log(this.account);
+          await this.fetchUserWallet(accounts[0]);
           await this.fetchData();
         } else {
           // Metamask is not installed
@@ -186,6 +207,20 @@ export default {
       }
     },
 
+    async fetchUserWallet(address) {
+      const provider = new ethers.BrowserProvider(window.ethereum, "any");
+      const instance = new ethers.Contract(
+        "0xFa64f316e627aD8360de2476aF0dD9250018CFc5",
+        factoryAbi,
+        provider
+      );
+
+      const wallet = await instance.walletOf(address);
+
+      console.log("Wallet:", wallet);
+      return wallet;
+    },
+
     // prove of account ownership with Sismo Connect
     async proveAndConnectSismo() {
       try {
@@ -194,13 +229,13 @@ export default {
           appId: '0x5f1dc504b19e9058c3560e5c4866acba',
           devMode: {
             // will use the Dev Sismo Data Vault https://dev.vault-beta.sismo.io/
-            enabled: true, 
-            // Display a modal at the end of the proof generation flow with the response 
+            enabled: true,
+            // Display a modal at the end of the proof generation flow with the response
             // to help you generate response for development purpose
             displayRawResponse: true,
           }
         });
-        const auth = { 
+        const auth = {
             // user should prove that they own a EVM account
             authType: AuthType.EVM_ACCOUNT,
         };
@@ -266,7 +301,7 @@ export default {
 <style>
 body {
   font-family: 'Gilroy-Medium', sans-serif;
-  background-color: #EFF3FD;
+  background-color: #eff3fd;
 }
 
 h1 {
@@ -274,8 +309,8 @@ h1 {
 }
 
 /* hide the back button of the header */
-.el-page-header__left >
-.el-page-header__back, .el-divider--vertical {
+.el-page-header__left > .el-page-header__back,
+.el-divider--vertical {
   display: none;
 }
 

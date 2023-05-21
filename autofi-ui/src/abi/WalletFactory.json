@@ -1,0 +1,6 @@
+[
+  "constructor(address)",
+  "event Created(address indexed,address indexed)",
+  "function createWallet()",
+  "function walletOf(address) view returns (address)"
+]

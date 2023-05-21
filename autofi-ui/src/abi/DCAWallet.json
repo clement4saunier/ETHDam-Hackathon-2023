@@ -1,0 +1,15 @@
+[
+  "constructor(address,address) payable",
+  "function _entryPoint() view returns (address)",
+  "function entryPoint() view returns (address)",
+  "function execute(address,uint256,bytes)",
+  "function getMsgHash(address,uint256,address) pure returns (bytes32)",
+  "function getNonce() view returns (uint256)",
+  "function owner() view returns (address)",
+  "function poolFee() view returns (uint24)",
+  "function setOwner(address)",
+  "function splitSignature(bytes) view returns (bytes32, bytes32, uint8)",
+  "function swap(address,uint256,address)",
+  "function validateUserOp(tuple(address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256) returns (uint256)",
+  "function verifyHash(bytes32,uint8,bytes32,bytes32) pure returns (address)"
+]
