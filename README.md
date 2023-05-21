@@ -26,7 +26,7 @@ Our simple UI provides the following functionalities and benefits:
 
 For more detailed information on the implementation of our functionality, please refer to the relevant sections of code in our repository.
 
-## How to run
+### How to run
 
 ```
 docker compose up --build
@@ -38,5 +38,5 @@ The docker compose config will run a local shadowfork of Arbitrum and deploy our
 
 The contracts are deployed on Scroll Alpha L2:
 
-Entrypoint: 0x36b58F5C1969B7b6591D752ea6F5486D069010AB
-WalletFactory: 0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7
+* Entrypoint: 0x36b58F5C1969B7b6591D752ea6F5486D069010AB
+* WalletFactory: 0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7
