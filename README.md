@@ -1,5 +1,7 @@
 # README - AutoFi
-`AutoFi ~ Easy DeFi investing`
+![Logo](https://github.com/clement4saunier/ETHDam-Hackathon-2023/assets/2742107/71473750-6892-4af2-8a50-81255a174cfe)
+
+`AutoFi ~ Automate your investing`
 
 ## Introduction
 AutoFi is our submission for the ETHDam 2023 hackathon. In this README, we'll provide an overview of our core idea, the solution and tech stack.
@@ -40,3 +42,6 @@ The contracts are deployed on Scroll Alpha L2:
 
 * Entrypoint: 0x36b58F5C1969B7b6591D752ea6F5486D069010AB
 * WalletFactory: 0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7
+
+
+![LOGO](https://github.com/clement4saunier/ETHDam-Hackathon-2023/assets/2742107/40ad9709-a89b-4e48-a54d-9cadca0068e1)
