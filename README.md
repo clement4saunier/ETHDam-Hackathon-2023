@@ -51,6 +51,6 @@ The contracts are deployed on Scroll Alpha L2:
 
 ![Desktop Responsive-0](https://github.com/clement4saunier/ETHDam-Hackathon-2023/assets/2742107/43d5a298-2072-42fc-bf12-9e5e1f5e0dbf)
 ![Desktop Responsive-1](https://github.com/clement4saunier/ETHDam-Hackathon-2023/assets/2742107/4c593484-0bc1-42c3-9d00-f2e854447a62)
-
+![Banner](https://github.com/clement4saunier/ETHDam-Hackathon-2023/assets/2742107/0d49ccd2-52c0-478f-83cb-c56922179465)
 
 ![LOGO](https://github.com/clement4saunier/ETHDam-Hackathon-2023/assets/2742107/6e459500-321d-418b-97ba-e82a03e407eb)
